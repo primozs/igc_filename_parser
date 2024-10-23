@@ -4,10 +4,9 @@ import std/tables
 import std/times
 import std/strutils
 import std/strformat
-import std/options
 import std/json
 import std/jsonutils
-# import std/marshal
+from std/options import none, some
 import pkg/results
 import pkg/regex
 import flight_recorder_manufacturers
@@ -286,23 +285,28 @@ proc parse*(filename: string, maxYear: int = -1): Opt[
 
   return Opt.none(IGCFilenameData)
 
-proc serialize(o: Opt[IGCFilenameData]): JsonNode =
-  # result = pretty( %* o)
+proc toJson(o: Opt[IGCFilenameData]): string =
   if o.isNone:
-    result = %*{}
+    result = pretty( %* none(string))
   else:
-    result = newJObject()
-
     let j = o.get
-    result = %* {
-      # "callsign": if j.callsign.isNone: j.callsign.get else:
-      "callsign": %(Opt.none(string))
-      # "date": if j.date.isSome: j.date.get esle: newJNull(),
-        # "manufacturer": if j.manufacturers.isSome: j.manufacturers.get else: newJNull(),
-        # "loggerId": if j.loggerId.isSome: j.loggerId.get else: newJNull(),
-        # "numFlight": if j.numFlight.isSome: j.numFlight.get else: newJNull()
-      }
+    let n = newJObject()
+    n["callsign"] = if j.callsign.isSome: newJString(
+        j.callsign.get) else: newJNull()
+    n["date"] = newJString(j.date)
 
+    if j.manufacturer.isSome:
+      n["manufacturer"] = newJString(j.manufacturer.get)
+    else:
+      n["manufacturer"] = newJNull()
+
+    n["loggerId"] = if j.loggerId.isSome: newJString(
+        j.loggerId.get) else: newJNull()
+    if j.numFlight.isSome:
+      n["numFlight"] = newJInt(j.numFlight.get)
+    else:
+      n["numFlight"] = newJNull()
+    result = pretty(n)
 
 when isMainModule:
   block:
@@ -322,7 +326,8 @@ when isMainModule:
 
   block:
     # echo "parseFullDate"
-    let res = parseFullDate("2019-08-19-XSD-GPB-01.igc", 2024)
+    let res = parse("2019-08-19-XSD-GPB-01.igc", 2024)
+    echo res.toJson()
   block:
     # echo "parseShort"
     # let res = parseShort("654VJJM1.igc", 2024)
@@ -345,8 +350,6 @@ when isMainModule:
     assert res.isNone == true
   block:
     let res = parse("78_65dv1qz1.igc");
-    # echo $$res
-    echo res.serialize
+    # echo res.toJson()
     assert res.isSome == true
-    # echo res.get.toJson
 

@@ -13,10 +13,10 @@ result = parse("78_65dv1qz1.igc");
 
 ```nim
 {
-  callsign: '78',
-  date: '2016-05-13',
-  manufacturer: 'LXNAV',
-  loggerId: '1QZ',
-  numFlight: 1,
+  "callsign": "78",
+  "date": "2016-05-13",
+  "manufacturer": "LXNAV",
+  "loggerId": "1QZ",
+  "numFlight": 1
 }
 ```
