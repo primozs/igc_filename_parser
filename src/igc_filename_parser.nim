@@ -285,7 +285,7 @@ proc parse*(filename: string, maxYear: int = -1): Opt[
 
   return Opt.none(IGCFilenameData)
 
-proc toJson(o: Opt[IGCFilenameData]): string =
+proc toJson*(o: Opt[IGCFilenameData]): string =
   if o.isNone:
     result = pretty( %* none(string))
   else:
