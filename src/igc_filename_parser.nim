@@ -132,7 +132,7 @@ proc parseShort(filename: string, maxYear: int): Opt[IGCFilenameData] =
   ))
 
 
-proc parseLong(filename: string, maxYear: int): Opt[IGCFilenameData] =
+proc parseLong*(filename: string, maxYear: int): Opt[IGCFilenameData] =
   var m: RegexMatch2
   let isMatch = match(filename, RE_LONG, m)
 
